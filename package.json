@@ -1,0 +1,77 @@
+{
+  "name": "deliveron",
+  "version": "1.0.0",
+  "description": "A small Shopify app that lets merchants add a \"Deliver On\" date selector to their cart page or post-checkout page.",
+  "main": "bin/server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nozzlegear/deliver-on.git"
+  },
+  "keywords": [
+    "shopify",
+    "deliver",
+    "delivery date",
+    "delivery by",
+    "nozzlegear"
+  ],
+  "author": "Joshua Harms <joshua@nozzlegear.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nozzlegear/deliver-on/issues"
+  },
+  "homepage": "https://github.com/nozzlegear/deliver-on#readme",
+  "devDependencies": {
+    "chokidar": "^1.5.1",
+    "css-loader": "^0.23.1",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^3.1.0",
+    "gulp-callback": "0.0.3",
+    "gulp-clean-css": "^2.0.7",
+    "gulp-concat": "^2.6.0",
+    "gulp-develop-server": "^0.5.1",
+    "gulp-foreach": "^0.1.0",
+    "gulp-if": "^2.0.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^2.3.1",
+    "gulp-shell": "^0.5.2",
+    "gulp-typescript": "^2.13.4",
+    "gulp-uglify": "^1.5.3",
+    "gulp-util": "^3.0.7",
+    "lazypipe": "^1.0.1",
+    "merge2": "^1.0.2",
+    "script-loader": "^0.7.0",
+    "style-loader": "^0.13.1",
+    "typescript": "^1.8.10",
+    "webpack-stream": "^3.2.0"
+  },
+  "dependencies": {
+    "bcrypt": "^0.8.6",
+    "bluebird": "^3.4.0",
+    "boom": "^3.2.0",
+    "catbox": "^7.1.1",
+    "catbox-memory": "^2.0.2",
+    "crumb": "^6.0.1",
+    "firebase": "^3.0.2",
+    "hapi": "^13.4.1",
+    "hapi-async-handler": "^1.0.3",
+    "hapi-react-views": "^8.0.0",
+    "inert": "^4.0.0",
+    "joi": "^8.1.0",
+    "lodash": "^4.13.1",
+    "node-uuid": "^1.4.7",
+    "nodemailer": "^2.4.2",
+    "nodemailer-sparkpost-transport": "^0.1.2",
+    "pouchdb": "^5.3.2",
+    "pouchdb-find": "^0.10.0",
+    "react": "^15.1.0",
+    "react-dom": "^15.1.0",
+    "shopify-prime": "^1.2.0",
+    "sitemap": "^1.6.0",
+    "string-capitalize": "^1.0.1",
+    "vision": "^4.1.0",
+    "yar": "^7.0.2"
+  }
+}
