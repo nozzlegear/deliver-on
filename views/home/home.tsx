@@ -28,7 +28,7 @@ export default function HomePage(props: IProps & DefaultContext)
                     {"Your Dashboard"}
                 </h1>
                 <p>
-                    {`Thanks for installing ${props.appName}! We've automatically added a delivery date selector to your store's cart page. In almost all cases the delivery date selector should blend right in with your store's cart page, but please contact us at support@deliveron.com in the rare case that it does not. We'd be happy to help.`}
+                    {`Thanks for installing ${props.appName}! We've automatically added a delivery date selector to your store's cart page. In almost all cases the delivery date selector should blend right in with your store's cart page, but please contact us at support@deliveron.xyz in the rare case that it does not. We'd be happy to help.`}
                 </p>
                 <section id="contenthost" />
                 <script id="configjson" type="application/json" dangerouslySetInnerHTML={{__html: JSON.stringify(config)}} />
