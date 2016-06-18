@@ -1,9 +1,10 @@
 {
   "name": "gearworks",
   "dependencies": {
-    "bluebird": "registry:npm/bluebird#3.3.4+20160515010139",
+    "bluebird": "registry:npm/bluebird#3.3.4+20160531224558",
     "lodash": "registry:npm/lodash#4.0.0+20160416211519",
-    "node-uuid": "registry:npm/node-uuid#1.4.7+20160503013124"
+    "node-uuid": "registry:npm/node-uuid#1.4.7+20160503013124",
+    "reqwest": "github:nozzlegear/reqwest.d.ts#e66c377"
   },
   "globalDependencies": {
     "bcrypt": "registry:dt/bcrypt#0.0.0+20160316155526",

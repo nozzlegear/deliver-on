@@ -72,6 +72,18 @@ h1, h2, h3, h4, h5, h6
     align-items: center;
 }
 
+section#home
+{
+    .form-footer
+    {
+        > .progress
+        {
+            margin: 0 1rem 0 0;
+            flex: 1;
+        }
+    }
+}
+
 .error
 {
     color: #e74c3c;

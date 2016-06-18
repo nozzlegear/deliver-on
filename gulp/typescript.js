@@ -1,19 +1,18 @@
 "use strict";
 
-const process      = require("process");
-const gulp         = require("gulp");
-const path         = require("path");
-const gutil        = require("gulp-util");
-const ts           = require("gulp-typescript");
-const gulpForEach  = require("gulp-foreach");
-const webpack      = require("webpack-stream");
-const minifyJs     = require("gulp-uglify");
-const rename       = require("gulp-rename");
-const gulpIf       = require("gulp-if");
-const lazypipe     = require("lazypipe");
-const lodash       = require("lodash");
-const gulpCallback = require("gulp-callback");
-const cwd          = path.resolve(process.cwd()).toLowerCase();
+const process       = require("process");
+const gulp          = require("gulp");
+const path          = require("path");
+const gutil         = require("gulp-util");
+const ts            = require("gulp-typescript");
+const gulpForEach   = require("gulp-foreach");
+const webpackStream = require("webpack-stream");
+const webpack       = require("webpack");
+const rename        = require("gulp-rename");
+const gulpIf        = require("gulp-if");
+const lazypipe      = require("lazypipe");
+const lodash        = require("lodash");
+const cwd           = path.resolve(process.cwd()).toLowerCase();
 
 const findTsDir = (outputPath, isSingleFilePath) =>
 {
@@ -72,7 +71,7 @@ const tsTask = (type, gulpSrc, singleFileSrcPath) =>
     const outputPath = findTsDir(singleFileSrcPath || (isServer ? "bin" :  "wwwroot"), !!singleFileSrcPath);
     const project = ts.createProject(path.resolve(cwd, isServer ? "tsconfig.json" : "js/tsconfig.json"));
 
-    const webpackAndMinify = lazypipe()
+    const pack = lazypipe()
         .pipe(gulpForEach, (stream, file) =>
         {
             // Using gulp-foreach to modify webpack options and prevent webpack from renaming all files
@@ -82,6 +81,14 @@ const tsTask = (type, gulpSrc, singleFileSrcPath) =>
             const options = {
                 module: {
                     loaders: [
+                        {
+                            loader: 'babel-loader',
+                            test: /\.js$/,
+                            exclude: /node_modules/,
+                            query: {
+                                presets: ['es2015'],
+                            },
+                        },
                         {
                             test: /\.css$/,
                             loaders: ["style", "css"]
@@ -94,12 +101,19 @@ const tsTask = (type, gulpSrc, singleFileSrcPath) =>
                 },
                 output: {
                     filename: filepath.name + ".min.js",
-                }
+                },
+                plugins: [
+                    new webpack.optimize.OccurenceOrderPlugin,
+                    new webpack.optimize.UglifyJsPlugin({
+                        compress: {
+                            warnings: false,
+                        }
+                    })
+                ],
             };
             
             return stream
-                .pipe(webpack(options))
-                .pipe(minifyJs({mangle: true}).on("error", gutil.log))
+                .pipe(webpackStream(options))
                 .pipe(gulp.dest(filepath.dir));
         })
     
@@ -112,9 +126,9 @@ const tsTask = (type, gulpSrc, singleFileSrcPath) =>
             path.dirname = "";
         })))
         .pipe(gulp.dest(outputPath)) //webpack-stream bug, files must exist on disk: https://github.com/shama/webpack-stream/issues/72
-        .pipe(gulpIf(!isServer, webpackAndMinify()));
+        .pipe(gulpIf(!isServer, pack()));
 }
 
 module.exports.task         = tsTask;
-module.exports.browserFiles = ["./js/**/*.ts"];
+module.exports.browserFiles = ["./js/**/*.{ts,tsx}"];
 module.exports.serverFiles  = ["./server.ts", "./modules/**/*.ts", "./routes/**/*.ts", "./views/**/*.{ts,tsx}"];

@@ -7,7 +7,7 @@ import {User, PasswordResetUser} from "gearworks";
 // Add the pouchdb-find plugin
 pouch.plugin(require("pouchdb-find"));
 
-export const Users = new pouch(`${DatabaseUrl}/users`);
+export const Users = new pouch(`${DatabaseUrl}/deliveron_users`);
 
 /**
  * Finds a user by their Shop Id.

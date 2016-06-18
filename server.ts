@@ -7,12 +7,13 @@ import * as path from "path";
 import * as util from "util";
 import {promisify} from "bluebird";
 import * as config from "./modules/config";
+import {configureAuth} from "./modules/auth";
 import {RoutesToRegister} from "./routes/index";
 import {defaults, isError, merge} from "lodash";
+import {Routes as ApiRoutes} from "./routes/api-v1/api-v1-routes";
 import {Server, ServerApp, DefaultContext} from "gearworks";
 import {IProps as ErrorPageProps} from "./views/errors/error";
 import {DefaultTTL, CacheName, registerCaches} from "./modules/cache";
-import {configureAuth} from "./modules/auth";
 
 //Prepare Hapi server
 const server: Server = new Hapi.Server() as Server;
@@ -38,7 +39,7 @@ async function registerPlugins()
     await server.register(require("hapi-async-handler"));
 
     //Crumb gives Hapi automatic CSRF protection.
-    await server.register(require("crumb"));
+    //await server.register(require("crumb"));
     
     //Yar is a cookie management plugin for Hapi.
     await server.register({
@@ -101,7 +102,16 @@ async function startServer()
     {
         const resp = request.response;
         
-        if (request.response.isBoom || isError(request.response))
+        resp.header("X-POWERED-BY", "Gearworks https://github.com/nozzlegear/gearworks");
+
+        if (request.route.path === ApiRoutes.AppConfig)
+        {
+            // API should return a plain JSON response, not the error view.
+
+            return reply.continue();
+        }
+
+        if (resp.isBoom || isError(resp))
         {
             const resp: Boom.BoomError = request.response as any;
             const payload: { error: string, message: string, statusCode: number } = resp.output.payload;
@@ -116,8 +126,6 @@ async function startServer()
 
             return (reply.view("errors/error.js", props)).code(payload.statusCode);
         }
-
-        request.response.header("X-POWERED-BY", "Gearworks https://github.com/nozzlegear/gearworks");
         
         return reply.continue();
     });    

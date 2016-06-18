@@ -145,6 +145,8 @@ declare module "gearworks"
          * The user's Shopify charge id.
          */
         chargeId?: number;
+
+        appConfig?: DeliverSettings;
     }
 
     /**
@@ -162,5 +164,13 @@ declare module "gearworks"
         userId: string;
         username: string;
         encryptionSignature: string;
+    }
+
+    export interface DeliverSettings
+    {
+        label?: string;
+        format?: "mm/dd/yyyy" | "dd/mm/yyyy";
+        addPickerToCheckout?: boolean;
+        allowChangeFromCheckout?: boolean;
     }
 }

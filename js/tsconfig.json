@@ -1,11 +1,12 @@
 {
     "compilerOptions": {
         "module": "commonjs",
-        "target": "es5",
+        "target": "es6",
         "noImplicitAny": false,
         "sourceMap": false,
         "jsx": "react",
-        "forceConsistentCasingInFileNames": true
+        "forceConsistentCasingInFileNames": true,
+        "outDir": "wwwroot/js"
     },
     "exclude": [
         "node_modules",

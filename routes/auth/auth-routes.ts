@@ -287,6 +287,12 @@ export async function postRegister(server: Server, request: Request, reply: IRep
         _id: payload.username.toLowerCase(),
         username: payload.username,
         hashedPassword: hashSync(payload.password, 10),
+        appConfig: {
+            label: "Choose a delivery date:",
+            addPickerToCheckout: false,
+            allowChangeFromCheckout: false,
+            format: "mm/dd/yyyy",
+        }
     }
     
     const create = await Users.put(user);
