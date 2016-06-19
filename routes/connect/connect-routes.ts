@@ -3,13 +3,14 @@
 import {IBoom, IReply, Response} from "hapi";
 import {Users} from "../../modules/database";
 import {findPlan} from "../../modules/plans";
+import {getDomain} from "../../modules/domain";
 import {Server, Request, User} from "gearworks";
+import {createTag} from "../../modules/script_tag";
 import {badRequest, expectationFailed} from "boom";
 import {strategies, setUserAuth} from "../../modules/auth";
 import {Routes as SetupRoutes} from "../setup/setup-routes";
-import {ShopifyApiKey, ShopifySecretKey} from "../../modules/config";
-import {getRequestDomain,getRequestHost} from "../../modules/requests";
 import {Routes as WebhookRoutes} from "../webhooks/webhook-routes";
+import {ShopifyApiKey, ShopifySecretKey} from "../../modules/config";
 import {
     isAuthenticRequest, 
     authorize, 
@@ -17,7 +18,9 @@ import {
     RecurringCharge, 
     Webhooks, 
     Infrastructure, 
-    Shops
+    Shops,
+    ScriptTag,
+    ScriptTags,
 } from "shopify-prime";
 
 export const Routes = {
@@ -83,7 +86,7 @@ export async function connectShopify(server: Server, request: Request, reply: IR
 
     const redirect = reply.redirect("/");
 
-    if (!server.app.isLive || getRequestHost(request).toLowerCase() === "localhost")
+    if (!server.app.isLive)
     {
         // Don't create any webhooks unless this app is running on a real domain. Webhooks cannot point to localhost.
         return redirect;
@@ -96,7 +99,7 @@ export async function connectShopify(server: Server, request: Request, reply: IR
     if ((await webhooks.list({topic: "app/uninstalled", fields: ["id"], limit: 1})).length === 0)
     {
         await webhooks.create({
-            address: `${getRequestDomain(request)}/${WebhookRoutes.GetAppUninstalled}?shopId=${user.shopifyShopId}`,
+            address: `https://${getDomain(false)}/${WebhookRoutes.GetAppUninstalled}?shopId=${user.shopifyShopId}`,
             topic: "app/uninstalled"
         })
     }
@@ -145,6 +148,9 @@ export async function activateShopifyPlan(server: Server, request: Request, repl
     }
     
     await setUserAuth(request, user);
+
+    // Create the script tag on the user's store.
+    await createTag(user.shopifyDomain, user.shopifyAccessToken, user.shopifyShopId);
     
     return reply.redirect("/");
 }

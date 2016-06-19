@@ -8,7 +8,18 @@ export const OptionalProps = [
     "StripeSecretKey",
     "SparkpostKey",
     "EmailDomain",
+    "NgrokDomain",
 ]
+
+/**
+ * Whether the server is running in a live (production) environment.
+ */
+export const isLive = env["NODE_ENV"] === "production"
+
+/**
+ * An ngrok URL used during testing with `gulp watch`.
+ */
+export const NgrokDomain = env["gearworks-ngrokDomain"];
 
 /**
  * A salt encryption string for Yar cookies.

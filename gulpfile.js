@@ -1,6 +1,7 @@
 "use strict";
 
 const gulp            = require("gulp");
+const ngrok           = require("ngrok");
 const chokidar        = require("chokidar");
 const shell           = require("gulp-shell");
 const server          = require("gulp-develop-server");
@@ -31,7 +32,21 @@ gulp.task("default", ["ts", "sass"]);
 
 gulp.task("watch", ["default"], (cb) =>
 {
-    server.listen({path: "bin/server.js", env: gearworksConfig});
+    const ngrokConfig = {
+        addr: gearworksConfig["gearworks-port"] || 3000,
+        subdomain: gearworksConfig["gearworks-ngrokSubdomain"],
+    }
+
+    ngrok.connect(ngrokConfig, (err, url) =>
+    {
+        if (err) throw err;
+
+        console.log("Started ngrok on", url);
+
+        gearworksConfig["gearworks-ngrokDomain"] = url.replace(/^.*:\/\//i, "");
+
+        server.listen({path: "bin/server.js", env: gearworksConfig});
+    })
     
     // Gulp.watch in 3.x is broken, watching more files than it should. Using chokidar instead.
     // https://github.com/gulpjs/gulp/issues/651

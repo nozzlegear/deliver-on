@@ -12,7 +12,7 @@ export const Users = new pouch(`${DatabaseUrl}/deliveron_users`);
 /**
  * Finds a user by their Shop Id.
  */
-export async function findUserByShopId(shopId: number): Promise<User>
+export async function findUserByShopId(shopId: number | string): Promise<User>
 {
     // Don't search for null, undefined or NaN values
     if (!shopId)
@@ -28,7 +28,7 @@ export async function findUserByShopId(shopId: number): Promise<User>
 
     const result = await Users.find<User>({
         selector: {
-            shopifyShopId: shopId,
+            shopifyShopId: parseInt(shopId as string),
         },
         limit: 1,
     });

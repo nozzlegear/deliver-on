@@ -39,7 +39,7 @@ async function registerPlugins()
     await server.register(require("hapi-async-handler"));
 
     //Crumb gives Hapi automatic CSRF protection.
-    //await server.register(require("crumb"));
+    await server.register(require("crumb"));
     
     //Yar is a cookie management plugin for Hapi.
     await server.register({
@@ -65,7 +65,7 @@ async function startServer()
     Object.getOwnPropertyNames(config).forEach((prop, index, propNames) =>
     {
         // Ensure config prop isn't optional
-        if (config.OptionalProps.indexOf(prop) === -1 && !config[prop])
+        if (config.OptionalProps.indexOf(prop) === -1 && typeof config[prop] === "undefined")
         {
             throw new Error(`Configuration property ${prop} cannot be null or empty. Check modules/config.ts to find the correct environment variable key for ${prop}.`);
         }
@@ -74,7 +74,7 @@ async function startServer()
     //Configure the server's app state
     server.app = {
         appName: config.AppName,
-        isLive: process.env.NODE_ENV === "production",
+        isLive: config.isLive,
         rootDir: path.resolve(__dirname),
     };
     
@@ -102,7 +102,10 @@ async function startServer()
     {
         const resp = request.response;
         
-        resp.header("X-POWERED-BY", "Gearworks https://github.com/nozzlegear/gearworks");
+        if (resp.header)
+        {
+            resp.header("X-POWERED-BY", "Gearworks https://github.com/nozzlegear/gearworks");
+        }
 
         if (request.route.path === ApiRoutes.AppConfig)
         {

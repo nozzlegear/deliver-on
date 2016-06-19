@@ -11,7 +11,7 @@ export const DefaultTTL = 60 * 60 * 1000; //60 minutes in milliseconds
 /**
  * A collection of caches used throughout the app.
  */
-export const Caches: {userAuth: CacheConfig} = {
+export const Caches: {userAuth: CacheConfig, shopTagConfig: CacheConfig} = {
     /**
      * A cache for storing user data used during auth checks.
      */
@@ -19,6 +19,14 @@ export const Caches: {userAuth: CacheConfig} = {
         segment: "user_auth_data",
         client: undefined,
         defaultTTL: DefaultTTL,
+    },
+    /**
+     * A cache for storing a shop's tag configuration.
+     */
+    shopTagConfig: {
+        segment: "shop_tag_config",
+        client: undefined,
+        defaultTTL: 24 * 60 * 60 * 1000, // Cache for 24 hours
     }
 }
 
@@ -27,15 +35,19 @@ export const Caches: {userAuth: CacheConfig} = {
  */
 export async function registerCaches(server: Server)
 {
-    Caches.userAuth.client = new Client(require("catbox-memory"), undefined);
-    Caches.userAuth.client.start(async (error) =>
+    Object.getOwnPropertyNames(Caches).forEach((prop, index, array) =>
     {
-        if (error)
+        const cache: CacheConfig = Caches[prop];
+        cache.client = new Client(require("catbox-memory"), undefined);
+        cache.client.start((error) =>
         {
-            console.error("Error starting cache client", error);
-            
-            throw error;
-        }
+            if (error)
+            {
+                console.error("Error starting cache client", error);
+                
+                throw error;
+            }
+        })
     })
 }
 

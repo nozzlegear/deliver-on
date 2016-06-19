@@ -6,10 +6,11 @@ import * as pouch from "pouchdb";
 import {IReply, IBoom} from "hapi";
 import {Users} from "../../modules/database";
 import {strategies} from "../../modules/auth";
+import {getDomain} from "../../modules/domain";
 import {Server, User, Request} from "gearworks";
 import {ShopifyApiKey} from "../../modules/config";
 import {humanizeError} from "../../modules/validation";
-import {getRequestDomain} from "../../modules/requests";
+import {getRequestProtocol} from "../../modules/requests";
 import {IProps as SetupProps} from "../../views/setup/setup";
 import {IProps as PlansProps} from "../../views/setup/plans";
 import {Routes as ConnectRoutes} from "../connect/connect-routes";
@@ -118,8 +119,8 @@ export async function setup(server: Server, request: Request, reply: IReply)
         return reply.view("setup/setup.js", props);
     }
     
-    const scopes: Enums.AuthScope[] = ["read_orders", "write_orders"]
-    const redirect = (getRequestDomain(request) + "/connect/shopify").toLowerCase();
+    const scopes: Enums.AuthScope[] = ["write_script_tags"]
+    const redirect = `${getRequestProtocol(request)}://${getDomain(true)}${ConnectRoutes.GetShopify}`.toLowerCase();
     const oauthUrl = await buildAuthorizationUrl(scopes, payload.shopUrl, ShopifyApiKey, redirect);
 
     return reply.redirect(oauthUrl);
@@ -174,7 +175,7 @@ export async function selectPlan(server: Server, request: Request, reply: IReply
         price: plan.price,
         test: !server.app.isLive,
         trial_days: plan.trialDays,
-        return_url: `${getRequestDomain(request)}${ConnectRoutes.GetShopifyActivate}?plan_id=${plan.id}`.toLowerCase(),
+        return_url: `${getRequestProtocol(request)}://${getDomain(true)}${ConnectRoutes.GetShopifyActivate}?plan_id=${plan.id}`.toLowerCase(),
     });
     
     //Send the user to the confirmation url

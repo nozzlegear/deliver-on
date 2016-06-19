@@ -4,6 +4,7 @@ import * as joi from "joi";
 import * as Boom from "boom";
 import {IReply, Response} from "hapi";
 import {Users} from "../../modules/database";
+import {Caches, setCacheValue} from "../../modules/cache";
 import {Server, Request, User, DeliverSettings} from "gearworks";
 
 export const Routes = {
@@ -23,8 +24,28 @@ export const Validation = {
 export function registerRoutes(server: Server)
 {
     server.route({
+        method: "OPTIONS",
+        path: Routes.AppConfig,
+        config: {
+            auth: false,
+            plugins: {
+                crumb: false,
+            }
+        },
+        handler: {
+            async: (request, reply) => options(server, request, reply)
+        }
+    })
+
+    server.route({
         method: "GET",
         path: Routes.AppConfig,
+        config: {
+            auth: false,
+            plugins: {
+                crumb: false,
+            }
+        },
         handler: {
             async: (request, reply) => getAppConfig(server, request, reply)
         }
@@ -39,9 +60,14 @@ export function registerRoutes(server: Server)
     })
 }
 
+export async function options(server: Server, request: Request, reply: IReply)
+{
+    return reply.continue();
+}
+
 export async function getAppConfig(server: Server, request: Request, reply: IReply)
 {
-
+    return reply(Boom.notImplemented());
 }
 
 export async function updateAppConfig(server: Server, request: Request, reply: IReply)
@@ -77,6 +103,9 @@ export async function updateAppConfig(server: Server, request: Request, reply: I
 
         return reply(Boom.expectationFailed("Failed to update user's app config."));
     }
+
+    // Bust the cache so users on the shop see this change immediately.
+    await setCacheValue(Caches.shopTagConfig, user.shopifyShopId.toString(), user.appConfig);
 
     return reply.continue() as any;
 }
