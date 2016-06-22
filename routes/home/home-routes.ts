@@ -43,7 +43,6 @@ export async function getHomepage(server: Server, request: Request, reply: IRepl
         allowChangeFromCheckout: user.appConfig.allowChangeFromCheckout,
         label: user.appConfig.label,
         format: user.appConfig.format,
-        crumb: undefined,
     }
     
     return reply.view("home/home.js", props)

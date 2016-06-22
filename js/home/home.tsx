@@ -3,14 +3,13 @@
 import * as React from "react";
 import * as reqwest from "reqwest";
 import * as Promise from "bluebird";
-import {Crumb} from "../../views/crumb";
 import {DeliverSettings} from "gearworks";
 import {render as renderComponent} from "react-dom";
 import {AutoPropComponent} from "auto-prop-component";
 
 export interface IProps extends React.Props<any>, DeliverSettings
 {
-    crumb: string;
+    
 }
 
 export interface IState extends DeliverSettings

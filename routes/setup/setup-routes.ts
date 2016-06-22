@@ -3,7 +3,7 @@
 import * as joi from "joi";
 import * as boom from "boom";
 import * as pouch from "pouchdb";
-import {IReply, IBoom} from "hapi";
+import {IReply, IBoom, IRouteConfiguration} from "hapi";
 import {Users} from "../../modules/database";
 import {strategies} from "../../modules/auth";
 import {getDomain} from "../../modules/domain";
@@ -50,7 +50,7 @@ export function registerRoutes(server: Server)
             async: (request, reply) => getSetupForm(server, request, reply)
         }
     });
-    
+
     server.route({
         method: "POST",
         path: Routes.PostSetup,

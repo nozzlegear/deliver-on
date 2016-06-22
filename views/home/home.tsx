@@ -18,7 +18,6 @@ export default function HomePage(props: IProps & DefaultContext)
         allowChangeFromCheckout: props.allowChangeFromCheckout,
         format: props.format,
         label: props.label,
-        crumb: props.crumb,
     };
 
     return (
