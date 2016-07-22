@@ -5,7 +5,7 @@ import * as boom from "boom";
 import * as pouch from "pouchdb";
 import * as guid from "node-uuid";
 import {createTransport} from "nodemailer";
-import {hashSync, compareSync} from "bcrypt";
+import {hashSync, compareSync} from "bcryptjs";
 import * as config from "../../modules/config";
 import {Request, IReply, IBoom, Response} from "hapi";
 import {getRequestDomain} from "../../modules/requests";

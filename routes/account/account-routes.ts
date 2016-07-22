@@ -4,7 +4,7 @@ import * as joi from "joi";
 import * as boom from "boom";
 import {IReply} from "hapi";
 import {Users} from "../../modules/database";
-import {hashSync, compareSync} from "bcrypt";
+import {hashSync, compareSync} from "bcryptjs";
 import {Server, Request, User} from "gearworks";
 import {findPlan, Plans} from "../../modules/plans";
 import {humanizeError} from "../../modules/validation";

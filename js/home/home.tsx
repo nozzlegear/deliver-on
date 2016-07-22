@@ -46,8 +46,8 @@ export class HomeForm extends AutoPropComponent<IProps, IState>
     }
 
     //#region Event handlers
-
-    public save(e: React.MouseEvent)
+ 
+    public save(e: React.MouseEvent<any>)
     {
         e.preventDefault();
 
@@ -59,7 +59,7 @@ export class HomeForm extends AutoPropComponent<IProps, IState>
         this.mergeState({isSaving: true});
 
         const state = this.state;
-
+ 
         const req = reqwest<string>({
             url: "/api/v1/config",
             data: JSON.stringify(state),
