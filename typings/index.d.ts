@@ -8,6 +8,5 @@
 /// <reference path="globals/nodemailer-types/index.d.ts" />
 /// <reference path="globals/nodemailer/index.d.ts" />
 /// <reference path="modules/bluebird/index.d.ts" />
-/// <reference path="modules/lodash/index.d.ts" />
 /// <reference path="modules/node-uuid/index.d.ts" />
 /// <reference path="modules/reqwest/index.d.ts" />

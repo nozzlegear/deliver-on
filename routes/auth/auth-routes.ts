@@ -56,7 +56,7 @@ export function registerRoutes(server: Server)
     server.route({
         path: Routes.GetLogin,
         method: "GET",
-        config: {
+        config: { 
             auth: false,
         },
         handler: {

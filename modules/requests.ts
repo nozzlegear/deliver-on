@@ -1,7 +1,7 @@
 /// <reference path="./../typings/index.d.ts" />
 
 import {Request} from "hapi";
-import * as Promise from "bluebird";
+import * as Bluebird from "bluebird";
 
 /**
  * Returns the request's protocol (e.g. https) by trying to read the x-forwarded-proto header. This is the protocol the user typed into their address bar.
@@ -38,7 +38,7 @@ export function getRequestDomain(request: Request)
  */
 export async function getRawBody(request: Request)
 {
-    return new Promise<string>((resolve, reject) =>
+    return new Bluebird<string>((resolve, reject) =>
     {
         let body = "";
 

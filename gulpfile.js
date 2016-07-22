@@ -3,32 +3,33 @@
 const gulp            = require("gulp");
 const ngrok           = require("ngrok");
 const chokidar        = require("chokidar");
+const sass            = require("gulp-sass");
 const shell           = require("gulp-shell");
+const rename          = require("gulp-rename");
+const minify          = require("gulp-clean-css");
+const autoprefix      = require("gulp-autoprefixer");
 const server          = require("gulp-develop-server");
 const gearworksConfig = require("./gearworks.private.json");
 
-//Tasks
-const sassTask = require("./gulp/sass");
-const tsTask = require("./gulp/typescript");
-
 gulp.task("sass", () =>
 {
-    return sassTask.task(gulp.src(sassTask.files));
+    const cssMinOptions = {
+        processImport: false,
+        processImportFrom: ['!fonts.googleapis.com']
+    }
+    
+    return gulp.src(['css/**/*.scss'])
+        .pipe(sass())
+        .pipe(autoprefix())
+        .pipe(minify(cssMinOptions))
+        .pipe(rename((path) => 
+        {
+            path.extname = ".min.css";
+        }))
+        .pipe(gulp.dest('wwwroot/css'));
 })
 
-gulp.task("ts:server", () =>
-{
-    return tsTask.task("server", gulp.src(tsTask.serverFiles));
-});
-
-gulp.task("ts:browser", () =>
-{
-    return tsTask.task("browser", gulp.src(tsTask.browserFiles));
-})
-
-gulp.task("ts", ["ts:server", "ts:browser"]);
-
-gulp.task("default", ["ts", "sass"]);
+gulp.task("default", ["sass"]);
 
 gulp.task("watch", ["default"], (cb) =>
 {
@@ -66,20 +67,6 @@ gulp.task("watch", ["default"], (cb) =>
         }
         
         return sassTask.task(gulp.src(path));
-    })
-    
-    chokidar.watch(tsTask.serverFiles, {ignoreInitial: true}).on("all", (event, path) =>
-    {
-        console.log(`${event}: TS server file ${path}`);
-        
-        return tsTask.task("server", gulp.src(path), path);
-    })
-    
-    chokidar.watch(tsTask.browserFiles, {ignoreInitial: true}).on("all", (event, path) =>
-    {
-        console.log(`${event}: TS browser file ${path}`);
-        
-        return tsTask.task("browser", gulp.src(path), path);
     })
     
     shell.task("pouchdb-server -n --dir pouchdb --port 5984")();

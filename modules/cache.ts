@@ -1,6 +1,6 @@
 /// <reference path="./../typings/typings.d.ts" />
 
-import * as Promise from "bluebird";
+import * as Bluebird from "bluebird";
 import {DatabaseUrl} from "./config";
 import {Server, CacheConfig} from "gearworks";
 import {Client, CachePolicy, CachedItem} from "catbox";
@@ -56,7 +56,7 @@ export async function registerCaches(server: Server)
  */
 export function getCacheValue<T>(cache: CacheConfig, key: string)
 {
-    return new Promise<CachedItem<T>>((resolve, reject) =>
+    return new Bluebird<CachedItem<T>>((resolve, reject) =>
     {
         cache.client.get<T>({id: key, segment: cache.segment}, (error, value) =>
         {
@@ -75,7 +75,7 @@ export function getCacheValue<T>(cache: CacheConfig, key: string)
  */
 export function setCacheValue<T>(cache: CacheConfig, key: string, value: T)
 {
-    return new Promise<void>((resolve, reject) =>
+    return new Bluebird<void>((resolve, reject) =>
     {
         cache.client.set({id: key, segment: cache.segment}, value, cache.defaultTTL, (error) =>
         {
@@ -94,7 +94,7 @@ export function setCacheValue<T>(cache: CacheConfig, key: string, value: T)
  */
 export function deleteCacheValue<T>(cache: CacheConfig, key: string)
 {
-    return new Promise<void>((resolve, reject) =>
+    return new Bluebird<void>((resolve, reject) =>
     {
         cache.client.drop({id: key, segment: cache.segment}, (error) =>
         {
