@@ -11,14 +11,14 @@ const autoprefix      = require("gulp-autoprefixer");
 const server          = require("gulp-develop-server");
 const gearworksConfig = require("./gearworks.private.json");
 
-gulp.task("sass", () =>
-{
+const sassFiles = ["css/**/*.scss"];
+const sassTask = (gulpSrc) => {
     const cssMinOptions = {
         processImport: false,
         processImportFrom: ['!fonts.googleapis.com']
     }
     
-    return gulp.src(['css/**/*.scss'])
+    return gulpSrc
         .pipe(sass())
         .pipe(autoprefix())
         .pipe(minify(cssMinOptions))
@@ -27,6 +27,11 @@ gulp.task("sass", () =>
             path.extname = ".min.css";
         }))
         .pipe(gulp.dest('wwwroot/css'));
+}
+
+gulp.task("sass", () =>
+{
+    return sassTask(gulp.src(sassFiles));
 })
 
 gulp.task("default", ["sass"]);
@@ -56,7 +61,7 @@ gulp.task("watch", ["default"], (cb) =>
         server.restart();
     });
 
-    chokidar.watch(sassTask.files, {ignoreInitial: true}).on("all", (event, path) =>
+    chokidar.watch(sassFiles, {ignoreInitial: true}).on("all", (event, path) =>
     {
         console.log(`${event}: Sass file ${path}`);
         
