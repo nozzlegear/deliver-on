@@ -1,9 +1,12 @@
 "use strict";
 
+const path          = require("path");
+const glob          = require("glob");
 const webpack       = require("webpack");
 const precss        = require('precss');
 const autoprefixer  = require('autoprefixer');
 const pkg           = require("./package.json");
+const some          = require("lodash/some");
 const lodashPack    = require("lodash-webpack-plugin");
 const nodeExternals = require('webpack-node-externals');
 
@@ -14,12 +17,18 @@ function buildConfig(target) {
             // Add '.ts' and '.tsx' as resolvable extensions.
             extensions: ["", ".webpack.js", ".web.js", ".ts", ".tsx", ".js"],
         },
+        watchOptions: {
+            // Set to true until Windows Subsystem for Linux supports filewatching: 
+            // https://github.com/Microsoft/BashOnWindows/issues/216
+            poll: true,
+        },
         entry: undefined,
         target: undefined,
         output: {
             path: undefined,
             filename: "[name].js",
         },
+        node: undefined,
         externals: [],
         devtool: "source-map",
         plugins: [
@@ -65,13 +74,33 @@ function buildConfig(target) {
         postcss: () => [precss, autoprefixer],
     }
 
-    if (target === "node") {
+    if (target === "node" || target === "node-views") 
+    {
         config.target = "node";
         config.entry = {
             "server" : "server.ts"
         };
         config.output.path = "bin";
         config.externals = [nodeExternals()];
+        config.node = {
+            // Set these to false or webpack will polyfill __dirname to '/' rather than the actual directory.
+            __filename: false,
+            __dirname: false,
+        }
+
+        if (target === "node-views")
+        {
+            config.entry = {};
+            config.output.libraryTarget = "commonjs2";
+
+            // Hapi does not allow requiring view files, instead they all need to be separately compiled.
+            const views = glob.sync("./views/*/*.tsx");
+
+            views.forEach((file) => {
+                const fp = path.parse(file);
+                config.entry[path.join(fp.dir, fp.name)] = path.join(fp.dir, fp.base);
+            })
+        }
     } else {
         config.entry = {
             "js/home/home": "js/home/home.tsx"
@@ -97,4 +126,4 @@ function buildConfig(target) {
     return config;
 }
 
-module.exports = [buildConfig("web"), buildConfig("node")];
+module.exports = [buildConfig("web"), buildConfig("node-views"), buildConfig("node")];

@@ -2,11 +2,14 @@
 
 const gulp            = require("gulp");
 const ngrok           = require("ngrok");
+const gutil           = require("gutil");
+const webpack         = require("webpack");
 const chokidar        = require("chokidar");
 const sass            = require("gulp-sass");
-const shell           = require("gulp-shell");
+const lt              = require("localtunnel");
 const rename          = require("gulp-rename");
 const minify          = require("gulp-clean-css");
+const webpackConfig   = require("./webpack.config");
 const autoprefix      = require("gulp-autoprefixer");
 const server          = require("gulp-develop-server");
 const gearworksConfig = require("./gearworks.private.json");
@@ -38,28 +41,47 @@ gulp.task("default", ["sass"]);
 
 gulp.task("watch", ["default"], (cb) =>
 {
-    const ngrokConfig = {
-        addr: gearworksConfig["gearworks-port"] || 3000,
-        subdomain: gearworksConfig["gearworks-ngrokSubdomain"],
-    }
+    const port = gearworksConfig["gearworks-port"] || 3000;
+    const subdomain = gearworksConfig["gearworks-ngrokSubdomain"];
+    const compiler = webpack(webpackConfig);
 
-    ngrok.connect(ngrokConfig, (err, url) =>
-    {
-        if (err) throw err;
+    let serverStarted = false;
+    let compiles = 0;
 
-        console.log("Started ngrok on", url);
+    compiler.watch({poll: true}, (err, stats) => {
+        if (err) { throw new gutil.PluginError('watch:webpack', err); }
 
-        gearworksConfig["gearworks-ngrokDomain"] = url.replace(/^.*:\/\//i, "");
+        compiles ++;
 
-        server.listen({path: "bin/server.js", env: gearworksConfig});
+        gutil.log(stats.toString({chunks: false, colors: true}));
+
+        // Only start the server after all webpack configs have compiled once.
+        if (compiles < webpackConfig.length)
+        {
+            return;
+        }
+
+        if (!serverStarted)
+        {
+            serverStarted = true;
+
+            const tunnel = lt(port, { subdomain: "auntiedots" }, (err, tunnel) => {
+                if (err) throw err;
+
+                console.log("Localtunnel available at", tunnel.url);
+
+                server.listen({path: "bin/server.js", env: gearworksConfig});
+            })
+
+            tunnel.on("close", () => {
+                console.log("Localtunnel closed.");
+            })
+        }
+        else
+        {
+            server.restart();
+        }
     })
-    
-    // Gulp.watch in 3.x is broken, watching more files than it should. Using chokidar instead.
-    // https://github.com/gulpjs/gulp/issues/651
-    chokidar.watch(["bin/**/*.js"], {ignoreInitial: true}).on("all", (event, path) =>
-    {
-        server.restart();
-    });
 
     chokidar.watch(sassFiles, {ignoreInitial: true}).on("all", (event, path) =>
     {
@@ -73,6 +95,4 @@ gulp.task("watch", ["default"], (cb) =>
         
         return sassTask.task(gulp.src(path));
     })
-    
-    shell.task("pouchdb-server -n --dir pouchdb --port 5984")();
 })

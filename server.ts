@@ -77,7 +77,7 @@ async function startServer()
         isLive: config.isLive,
         rootDir: path.resolve(__dirname),
     };
-    
+
     await registerPlugins();
     
     //Configure authentication. Must be done before configuring routes
