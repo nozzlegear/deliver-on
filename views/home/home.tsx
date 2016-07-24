@@ -21,7 +21,7 @@ export default function HomePage(props: IProps & DefaultContext)
     };
 
     return (
-        <Layout {...props} scripts={["/wwwroot/js/home/home.min.js"]}>
+        <Layout {...props} scripts={["wwwroot/js/shared.js", "/wwwroot/js/home/home.js"]}>
             <section id="home">
                 <h1 className="page-title">
                     {"Your Dashboard"}
