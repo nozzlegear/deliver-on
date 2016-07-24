@@ -8,3 +8,4 @@ bin/ linguist-vendored
 css linguist-vendored
 css/ linguist-vendored
 css/* linguist-vendored
+webpack.config.js linguist-vendored
