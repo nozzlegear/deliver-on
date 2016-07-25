@@ -3,6 +3,7 @@
 declare module "gearworks"
 {
     import * as pouch from "pouchdb";
+    import {IProps as ClientSettings} from "deliver-on-client";
     import {CachePolicy, CacheOptions, CacheClient} from "catbox";
     import {
         Server as HapiServer, 
@@ -166,11 +167,8 @@ declare module "gearworks"
         encryptionSignature: string;
     }
 
-    export interface DeliverSettings
+    export interface DeliverSettings extends ClientSettings
     {
-        label?: string;
-        format?: "mm/dd/yyyy" | "dd/mm/yyyy";
-        addPickerToCheckout?: boolean;
-        allowChangeFromCheckout?: boolean;
+        
     }
 }
