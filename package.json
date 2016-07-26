@@ -5,7 +5,7 @@
   "main": "bin/server.js",
   "scripts": {
     "build": "webpack && gulp",
-    "watch": "concurrently 'pouchdb-server -n --dir pouchdb --port 5984' 'gulp watch'",
+    "watch": "concurrently \"pouchdb-server -n --dir pouchdb --port 5984\" \"gulp watch\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -69,7 +69,7 @@
     "@types/lodash": "0.0.28",
     "@types/react": "^0.14.27",
     "@types/react-dom": "github:nozzlegear/react-dom.d.ts#c125ab5",
-    "auto-prop-component": "^1.6.1",
+    "auto-prop-component": "^1.7.0",
     "bcryptjs": "^2.3.0",
     "bluebird": "^3.4.1",
     "boom": "^3.2.0",

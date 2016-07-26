@@ -9,7 +9,7 @@ import {AutoPropComponent} from "auto-prop-component";
 
 export interface IProps extends React.Props<any>, DeliverSettings
 {
-    
+    settings: DeliverSettings;
 }
 
 export interface IState extends DeliverSettings
@@ -28,13 +28,8 @@ export class HomeForm extends AutoPropComponent<IProps, IState>
     
     private configureState(props: IProps, useSetState: boolean)
     {
-        const state: IState = {
-            label: props.label,
-            addPickerToCheckout: props.addPickerToCheckout,
-            allowChangeFromCheckout: props.allowChangeFromCheckout,
-            format: props.format,
-        };
-        
+        const state: IState = Object.assign({}, props.settings);
+                
         if (!useSetState)
         {
             this.state = state;
@@ -47,7 +42,7 @@ export class HomeForm extends AutoPropComponent<IProps, IState>
 
     //#region Event handlers
  
-    public save(e: React.MouseEvent<any>)
+    private save(e: React.MouseEvent<any>)
     {
         e.preventDefault();
 
@@ -56,13 +51,16 @@ export class HomeForm extends AutoPropComponent<IProps, IState>
             return;
         }
 
-        this.mergeState({isSaving: true});
+        this.getAndUpdateState((state) =>
+        {
+            state.isSaving = true;
 
-        const state = this.state;
- 
+            return state;
+        })
+
         const req = reqwest<string>({
             url: "/api/v1/config",
-            data: JSON.stringify(state),
+            data: JSON.stringify(this.state),
             method: "PUT",
             contentType: "application/json",
             headers: {
@@ -71,18 +69,29 @@ export class HomeForm extends AutoPropComponent<IProps, IState>
             }
         });
 
-        Promise.resolve(req).then((result) =>
-        {
-            // Force the dashboard to show the newly saved state
-            this.mergeState(state);
-        }).catch((error) =>
+        Promise.resolve(req).then((result) => ({})).catch((error) =>
         {
             alert("Something went wrong and your changes could not be saved. Please reload this page and try again.");
 
             console.error("Failed to save changes to user's configuration.", error);
         }).finally(() =>
         {
-            this.mergeState({isSaving: false}); 
+            this.getAndUpdateState((state) => {
+                state.isSaving = false;
+
+                return state;
+            }) 
+        })
+    }
+
+    private toggleCheckbox(e: React.FormEvent<HTMLInputElement>)
+    {
+        e.preventDefault();
+
+        this.getAndUpdateState((state) => { 
+            state.addPickerToCheckout = !state.addPickerToCheckout; 
+            
+            return state; 
         })
     }
 
@@ -116,7 +125,7 @@ export class HomeForm extends AutoPropComponent<IProps, IState>
                                 {"Label:"}
                             </label>
                             <div className="col-md-10">
-                                <input className="form-control" type="text" name="label" value={label} onChange={this.updateState((s, v) => s.label = v, false)} />
+                                <input className="form-control" type="text" name="label" value={label} onChange={this.updateStateFromEvent((s, v) => s.label = v, false)} />
                             </div>
                         </div>
                         <div className="form-group">
@@ -126,13 +135,13 @@ export class HomeForm extends AutoPropComponent<IProps, IState>
                             <div className="col-md-10">
                                 <div className="radio">
                                     <label>
-                                        <input type="radio" name="dateFormat" value="mm/dd/yyyy" checked={format === "mm/dd/yyyy"} onChange={this.updateState((s, v) => s.format = "mm/dd/yyyy", false)}  />
+                                        <input type="radio" name="dateFormat" value="mm/dd/yyyy" checked={format === "mm/dd/yyyy"} onChange={this.updateStateFromEvent((s, v) => s.format = "mm/dd/yyyy", false)}  />
                                         {`MM/DD/YYYY`}
                                     </label>
                                 </div>
                                 <div className="radio">
                                     <label>
-                                        <input type="radio" name="dateFormat" value="dd/mm/yyyy" checked={format === "dd/mm/yyyy"} onChange={this.updateState((s, v) => s.format = "dd/mm/yyyy", false)} />
+                                        <input type="radio" name="dateFormat" value="dd/mm/yyyy" checked={format === "dd/mm/yyyy"} onChange={this.updateStateFromEvent((s, v) => s.format = "dd/mm/yyyy", false)} />
                                         {`DD/MM/YYYY`}
                                     </label>
                                 </div>
@@ -142,7 +151,7 @@ export class HomeForm extends AutoPropComponent<IProps, IState>
                             <div className="col-md-10 col-md-offset-2">
                                 <div className="checkbox">
                                     <label>
-                                        <input type="checkbox" checked={addPickerToCheckout} onChange={(e) => { this.mergeState({addPickerToCheckout: !addPickerToCheckout}) }} style={{"marginRight" : "5px"}} />
+                                        <input type="checkbox" checked={addPickerToCheckout} onChange={this.toggleCheckbox} style={{"marginRight" : "5px"}} />
                                         {"Add date picker to post-checkout page."}
                                     </label>
                                 </div>
