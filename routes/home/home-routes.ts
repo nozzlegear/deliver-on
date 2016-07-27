@@ -39,10 +39,7 @@ export async function getHomepage(server: Server, request: Request, reply: IRepl
     const props: IProps = {
         title: "Your Dashboard",
         shopName: request.auth.artifacts.shopName,
-        addPickerToCheckout: user.appConfig.addPickerToCheckout,
-        allowChangeFromCheckout: user.appConfig.allowChangeFromCheckout,
-        label: user.appConfig.label,
-        format: user.appConfig.format,
+        settings: user.appConfig
     }
     
     return reply.view("home/home.js", props)

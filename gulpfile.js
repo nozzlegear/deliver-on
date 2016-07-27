@@ -7,6 +7,7 @@ const webpack         = require("webpack");
 const chokidar        = require("chokidar");
 const sass            = require("gulp-sass");
 const lt              = require("localtunnel");
+const some            = require("lodash/some");
 const rename          = require("gulp-rename");
 const minify          = require("gulp-clean-css");
 const webpackConfig   = require("./webpack.config");
@@ -65,19 +66,25 @@ gulp.task("watch", ["default"], (cb) =>
         {
             serverStarted = true;
 
-            const tunnel = lt(port, { subdomain: "auntiedots" }, (err, tunnel) => {
-                if (err) throw err;
+            server.listen({path: "bin/server.js", env: gearworksConfig});
 
-                console.log("Localtunnel available at", tunnel.url);
+            return;
 
-                server.listen({path: "bin/server.js", env: gearworksConfig});
-            })
+            // const tunnel = lt(port, { subdomain: "auntiedots" }, (err, tunnel) => {
+            //     if (err) throw err;
 
-            tunnel.on("close", () => {
-                console.log("Localtunnel closed.");
-            })
+            //     console.log("Localtunnel available at", tunnel.url);
+
+            //     server.listen({path: "bin/server.js", env: gearworksConfig});
+            // })
+
+            // tunnel.on("close", () => {
+            //     console.log("Localtunnel closed.");
+            // })
         }
-        else
+
+        // Only restart after all configs are packed 
+        if (compiles > webpackConfig.length && compiles % webpackConfig.length === 0)
         {
             server.restart();
         }

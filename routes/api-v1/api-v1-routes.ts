@@ -4,8 +4,10 @@ import * as joi from "joi";
 import * as Boom from "boom";
 import {IReply, Response} from "hapi";
 import {Users} from "../../modules/database";
+import {Server, Request, User} from "gearworks";
+import {humanizeError} from "./../../modules/validation"; 
 import {Caches, setCacheValue} from "../../modules/cache";
-import {Server, Request, User, DeliverSettings} from "gearworks";
+import {IProps as DeliverSettings} from "deliver-on-client";
 
 export const Routes = {
     AppConfig: "/api/v1/config",
@@ -13,11 +15,23 @@ export const Routes = {
 
 export const Validation = {
     UpdateAppConfig: joi.object().keys({
-        label: joi.string().label("Label"),
+        label: joi.object().keys({
+            text: joi.string().label("Label"),
+            placement: joi.string().only("top", "right", "bottom", "left").label("Label placement"),
+            textAlignment: joi.string().only("left", "right").label("Label text alignment"),
+            classes: joi.string().optional().label("Label CSS classes"),
+        }),
+        input: joi.object().keys({
+            classes: joi.string().optional().label("Text field CSS classes"),
+            placeholder: joi.string().optional().label("Text field placeholder"),
+        }),
         format: joi.string().only("mm/dd/yyyy", "dd/mm/yyyy").label("Format"),
-        addPickerToCheckout: joi.bool(),
+        maxDays: joi.number().label("Maximum allowed days"),
+        placement: joi.string().only("left", "right", "center"),
         allowChangeFromCheckout: joi.bool(),
-        isSaving: joi.bool().optional(),
+        addPickerToCheckout: joi.bool(),
+        error: joi.any().strip(),
+        isSaving: joi.any().strip(),
     })
 }
 
@@ -76,7 +90,7 @@ export async function updateAppConfig(server: Server, request: Request, reply: I
 
     if (validation.error)
     {
-        return reply(Boom.wrap(validation.error));
+        return reply(Boom.badData(humanizeError(validation.error), validation.error));
     }
 
     const payload = validation.value;

@@ -288,10 +288,19 @@ export async function postRegister(server: Server, request: Request, reply: IRep
         username: payload.username,
         hashedPassword: hashSync(payload.password, 10),
         appConfig: {
-            label: "Choose a delivery date:",
+            label: { 
+                text: "Pick your delivery date:",
+                textAlignment: "left",
+                placement: "top",
+            },
+            input: {
+                placeholder: "Click/tap to select",
+            },
+            placement: "right",
+            format: "mm/dd/yyyy",
             addPickerToCheckout: false,
             allowChangeFromCheckout: false,
-            format: "mm/dd/yyyy",
+            maxDays: 7,
         }
     }
     

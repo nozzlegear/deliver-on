@@ -3,18 +3,20 @@
 import * as React from "react";
 import * as reqwest from "reqwest";
 import * as Promise from "bluebird";
-import {DeliverSettings} from "gearworks";
 import {render as renderComponent} from "react-dom";
 import {AutoPropComponent} from "auto-prop-component";
+import {IProps as DeliverSettings} from "deliver-on-client";
 
-export interface IProps extends React.Props<any>, DeliverSettings
+export interface IProps extends React.Props<any>
 {
     settings: DeliverSettings;
 }
 
 export interface IState extends DeliverSettings
 {
-    isSaving?: boolean;   
+    isSaving?: boolean;
+
+    error?: string;
 }
 
 export class HomeForm extends AutoPropComponent<IProps, IState>
@@ -54,6 +56,7 @@ export class HomeForm extends AutoPropComponent<IProps, IState>
         this.getAndUpdateState((state) =>
         {
             state.isSaving = true;
+            state.error = undefined;
 
             return state;
         })
@@ -71,9 +74,23 @@ export class HomeForm extends AutoPropComponent<IProps, IState>
 
         Promise.resolve(req).then((result) => ({})).catch((error) =>
         {
-            alert("Something went wrong and your changes could not be saved. Please reload this page and try again.");
-
             console.error("Failed to save changes to user's configuration.", error);
+
+            const request: XMLHttpRequest = error;
+            let message = "Something went wrong and your changes could not be saved. Please reload this page and try again.";
+
+            if (request.status === 422)
+            {
+                const data: { status: number, message: string } = JSON.parse(request.responseText);
+
+                message = data.message;
+            }
+            
+            this.getAndUpdateState((state) => {
+                state.error = message;
+
+                return state;
+            })
         }).finally(() =>
         {
             this.getAndUpdateState((state) => {
@@ -86,9 +103,10 @@ export class HomeForm extends AutoPropComponent<IProps, IState>
 
     private toggleCheckbox(e: React.FormEvent<HTMLInputElement>)
     {
-        e.preventDefault();
+        this.getAndUpdateState((state) => 
+        { 
+            console.log("Checkbox toggling from ", state.addPickerToCheckout, "to", !state.addPickerToCheckout);
 
-        this.getAndUpdateState((state) => { 
             state.addPickerToCheckout = !state.addPickerToCheckout; 
             
             return state; 
@@ -114,7 +132,7 @@ export class HomeForm extends AutoPropComponent<IProps, IState>
 
     public render()
     {
-        const {addPickerToCheckout,allowChangeFromCheckout,format,label,isSaving} = this.state;
+        const {addPickerToCheckout,allowChangeFromCheckout,format,label,isSaving,error} = this.state;
 
         return (
             <div className="row">
@@ -125,7 +143,7 @@ export class HomeForm extends AutoPropComponent<IProps, IState>
                                 {"Label:"}
                             </label>
                             <div className="col-md-10">
-                                <input className="form-control" type="text" name="label" value={label} onChange={this.updateStateFromEvent((s, v) => s.label = v, false)} />
+                                <input className="form-control" type="text" name="label" value={label.text} onChange={this.updateStateFromEvent((s, v) => s.label.text = v, false)} />
                             </div>
                         </div>
                         <div className="form-group">
@@ -151,12 +169,14 @@ export class HomeForm extends AutoPropComponent<IProps, IState>
                             <div className="col-md-10 col-md-offset-2">
                                 <div className="checkbox">
                                     <label>
-                                        <input type="checkbox" checked={addPickerToCheckout} onChange={this.toggleCheckbox} style={{"marginRight" : "5px"}} />
+                                        <input type="checkbox" checked={addPickerToCheckout} onChange={(e) => this.toggleCheckbox(e)} style={{"marginRight" : "5px"}} />
                                         {"Add date picker to post-checkout page."}
                                     </label>
                                 </div>
                             </div>
                         </div>
+                        <hr />
+                        { error ? <p className="error red">{error}</p> : null }
                         <div className="form-footer">
                             <button type="button" className="btn btn-primary" onClick={(e) => this.save(e)}>
                                 { isSaving ? "Updating" : "Update"}

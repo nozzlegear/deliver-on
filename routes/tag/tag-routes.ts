@@ -2,8 +2,9 @@
 import {Response, IReply} from "hapi";
 import {notFound, wrap as boom} from "boom";
 import {getDomain} from "../../modules/domain";
+import {Server, Request, User} from "gearworks";
 import {findUserByShopId} from "../../modules/database";
-import {Server, Request, DeliverSettings, User} from "gearworks";
+import {IProps as DeliverSettings} from "deliver-on-client";
 import {Caches, getCacheValue, setCacheValue} from "../../modules/cache";
 import {Domain, Host, isLive, Port, NgrokDomain} from "../../modules/config";
 

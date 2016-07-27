@@ -147,7 +147,7 @@ declare module "gearworks"
          */
         chargeId?: number;
 
-        appConfig?: DeliverSettings;
+        appConfig?: ClientSettings;
     }
 
     /**
@@ -165,10 +165,5 @@ declare module "gearworks"
         userId: string;
         username: string;
         encryptionSignature: string;
-    }
-
-    export interface DeliverSettings extends ClientSettings
-    {
-        
     }
 }
