@@ -132,25 +132,90 @@ export class HomeForm extends AutoPropComponent<IProps, IState>
 
     public render()
     {
-        const {addPickerToCheckout,allowChangeFromCheckout,format,label,isSaving,error} = this.state;
+        const {addPickerToCheckout,allowChangeFromCheckout, input, format, placement, label,isSaving,error} = this.state;
+        const labelPlacements = ["top", "right", "bottom", "left"].map(value => (
+            <div className="radio" key={"labelPlacement-" + value}>
+                <label>
+                    <input type="radio" name="labelPlacement" value={value} checked={label.placement === value} onChange={this.updateStateFromEvent((s, v) => s.label.placement = v)} />
+                    <span style={{"textTransform": "capitalize"}}>{value}</span>
+                </label>
+            </div>
+        ));
+        const labelAlignments = ["left", "right"].map(value => (
+            <div className="radio" key={"labelAlignment-" + value}>
+                <label>
+                    <input type="radio" name="labelAlignment" value={value} checked={label.textAlignment === value} onChange={this.updateStateFromEvent((s, v) => s.label.textAlignment = v)} />
+                    <span style={{"textTransform" : "capitalize"}}>{value}</span>
+                </label>
+            </div>
+        ))
+        const pickerPlacements = ["left", "right", "center"].map(value => (
+            <div className="radio" key={"placement-" + value}>
+                <label>
+                    <input type="radio" name="pickerPlacement" value={value} checked={placement === value} onChange={this.updateStateFromEvent((s, v) => s.placement = v)} />
+                    <span style={{"textTransform" : "capitalize"}}>{value}</span>
+                </label>
+            </div>
+        ))
 
         return (
             <div className="row">
-                <div className="col-md-6">
+                <div className="col-md-7">
                     <form className="form form-horizontal well">
                         <div className="form-group">
-                            <label className="control-label col-md-2">
-                                {"Label:"}
+                            <label className="control-label col-md-3">
+                                {"Label text"}
                             </label>
-                            <div className="col-md-10">
+                            <div className="col-md-9">
                                 <input className="form-control" type="text" name="label" value={label.text} onChange={this.updateStateFromEvent((s, v) => s.label.text = v, false)} />
                             </div>
                         </div>
                         <div className="form-group">
-                            <label className="control-label col-md-2">
-                                {"Format:"}
+                            <label className="control-label col-md-3">
+                                {"Label placement"}
                             </label>
-                            <div className="col-md-10">
+                            <div className="col-md-9">
+                                {labelPlacements}
+                            </div>
+                        </div>
+                        <div className="form-group">
+                            <label className="control-label col-md-3">
+                                {"Label text align"}
+                            </label>
+                            <div className="col-md-9">
+                                {labelAlignments}
+                            </div>
+                        </div>
+                        <div className="form-group">
+                            <label className="control-label col-md-3">
+                                {"Label CSS classes"}
+                            </label>
+                            <div className="col-md-9">
+                                <input className="form-control" type="text" value={label.classes} onChange={this.updateStateFromEvent((s, v) => s.label.classes = v)} />
+                            </div>
+                        </div>
+                        <hr/>
+                        <div className="form-group">
+                            <label className="control-label col-md-3">
+                                {"Picker placement"}
+                            </label>
+                            <div className="col-md-9">
+                                {pickerPlacements}
+                            </div>
+                        </div>
+                        <div className="form-group">
+                            <label className="control-label col-md-3">
+                                {"Picker CSS classes"}
+                            </label>
+                            <div className="col-md-9">
+                                <input className="form-control" type="text" value={input.classes} onChange={this.updateStateFromEvent((s, v) => s.input.classes = v)} />
+                            </div>
+                        </div>
+                        <div className="form-group">
+                            <label className="control-label col-md-3">
+                                {"Date format"}
+                            </label>
+                            <div className="col-md-9">
                                 <div className="radio">
                                     <label>
                                         <input type="radio" name="dateFormat" value="mm/dd/yyyy" checked={format === "mm/dd/yyyy"} onChange={this.updateStateFromEvent((s, v) => s.format = "mm/dd/yyyy", false)}  />
@@ -161,16 +226,6 @@ export class HomeForm extends AutoPropComponent<IProps, IState>
                                     <label>
                                         <input type="radio" name="dateFormat" value="dd/mm/yyyy" checked={format === "dd/mm/yyyy"} onChange={this.updateStateFromEvent((s, v) => s.format = "dd/mm/yyyy", false)} />
                                         {`DD/MM/YYYY`}
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="form-group">
-                            <div className="col-md-10 col-md-offset-2">
-                                <div className="checkbox">
-                                    <label>
-                                        <input type="checkbox" checked={addPickerToCheckout} onChange={(e) => this.toggleCheckbox(e)} style={{"marginRight" : "5px"}} />
-                                        {"Add date picker to post-checkout page."}
                                     </label>
                                 </div>
                             </div>
