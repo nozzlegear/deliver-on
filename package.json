@@ -4,6 +4,7 @@
   "description": "A small Shopify app that lets merchants add a \"Deliver On\" date selector to their cart page or post-checkout page.",
   "main": "bin/server.js",
   "scripts": {
+    "start": "node bin/server.js",
     "build": "webpack && gulp",
     "watch": "concurrently \"pouchdb-server -n --dir pouchdb --port 5984\" \"gulp watch\"",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -35,6 +36,7 @@
     "concurrently": "^2.2.0",
     "css-loader": "^0.23.1",
     "deliver-on-client": "^1.2.2",
+    "envfile": "^2.1.1",
     "glob": "^7.0.5",
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^3.1.0",

@@ -18,8 +18,8 @@ import {DefaultTTL, CacheName, registerCaches} from "./modules/cache";
 //Prepare Hapi server
 const server: Server = new Hapi.Server() as Server;
 const serverConfig: Hapi.IServerConnectionOptions = {
-    port: config.Port || 3000,
-    host: config.Host || "localhost",
+    port: 8080,
+    host: "0.0.0.0",
     router: {
         isCaseSensitive: false,
         stripTrailingSlash: true
@@ -67,7 +67,7 @@ async function startServer()
         // Ensure config prop isn't optional
         if (config.OptionalProps.indexOf(prop) === -1 && typeof config[prop] === "undefined")
         {
-            throw new Error(`Configuration property ${prop} cannot be null or empty. Check modules/config.ts to find the correct environment variable key for ${prop}.`);
+            //throw new Error(`Configuration property ${prop} cannot be null or empty. Check modules/config.ts to find the correct environment variable key for ${prop}.`);
         }
     })
     
@@ -101,6 +101,8 @@ async function startServer()
     server.ext("onPreResponse", (request, reply) =>
     {
         const resp = request.response;
+
+        console.log("Request received");
         
         if (resp.header)
         {

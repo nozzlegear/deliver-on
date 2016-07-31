@@ -13,7 +13,7 @@ const minify          = require("gulp-clean-css");
 const webpackConfig   = require("./webpack.config");
 const autoprefix      = require("gulp-autoprefixer");
 const server          = require("gulp-develop-server");
-const gearworksConfig = require("./gearworks.private.json");
+const gearworksConfig = require("envfile").parseFileSync("./gearworks.private.env");
 
 const sassFiles = ["css/**/*.scss"];
 const sassTask = (gulpSrc) => {
