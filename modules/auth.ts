@@ -57,7 +57,6 @@ export function configureAuth(server: Server)
             {
                 const response = request.generateResponse().redirect(AuthRoutes.GetLogin);
                 
-
                 // Response is ignored if error is passed in as first param
                 return reply(null, response);
             }

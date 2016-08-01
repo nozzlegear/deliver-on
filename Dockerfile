@@ -5,7 +5,8 @@ WORKDIR "/app"
 ADD package.json package.json
 RUN npm install
 COPY . ./
-ENV NODE_ENV=production 
+ARG env=production
+ENV NODE_ENV=$env 
 RUN npm run build
-EXPOSE 8080
+EXPOSE 443
 CMD ["npm", "start"]

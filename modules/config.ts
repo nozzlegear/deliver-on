@@ -39,12 +39,12 @@ export const DatabaseUrl: string = env["gearworks-couchUrl"] || env["couchUrl"];
 /**
  * Your server app's port. Typically set automatically by your host with the PORT environment variable.
  */
-export const Port = env["gearworks-port"] || env["PORT"];
+export const Port = 8080;
 
 /**
- * Your server app's host domain. Typically set automatically by your host with the HOST environment variable.
+ * Your server app's host domain. Typically set automatically by your host with the HOST environment variable. Use 0.0.0.0 when running in a Docker container.
  */
-export const Host = env["gearworks-host"] || env["HOST"];
+export const Host = "0.0.0.0";
 
 /**
  * Your app's full domain, e.g. example.com or www.example.com.

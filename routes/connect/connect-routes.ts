@@ -3,14 +3,13 @@
 import {IBoom, IReply, Response} from "hapi";
 import {Users} from "../../modules/database";
 import {findPlan} from "../../modules/plans";
-import {getDomain} from "../../modules/domain";
 import {Server, Request, User} from "gearworks";
 import {createTag} from "../../modules/script_tag";
 import {badRequest, expectationFailed} from "boom";
 import {strategies, setUserAuth} from "../../modules/auth";
 import {Routes as SetupRoutes} from "../setup/setup-routes";
 import {Routes as WebhookRoutes} from "../webhooks/webhook-routes";
-import {ShopifyApiKey, ShopifySecretKey} from "../../modules/config";
+import {ShopifyApiKey, ShopifySecretKey, Domain} from "../../modules/config";
 import {
     isAuthenticRequest, 
     authorize, 
@@ -99,7 +98,7 @@ export async function connectShopify(server: Server, request: Request, reply: IR
     if ((await webhooks.list({topic: "app/uninstalled", fields: ["id"], limit: 1})).length === 0)
     {
         await webhooks.create({
-            address: `https://${getDomain(false)}/${WebhookRoutes.GetAppUninstalled}?shopId=${user.shopifyShopId}`,
+            address: `https://${Domain}/${WebhookRoutes.GetAppUninstalled}?shopId=${user.shopifyShopId}`,
             topic: "app/uninstalled"
         })
     }

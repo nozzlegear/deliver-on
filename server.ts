@@ -15,10 +15,41 @@ import {Server, ServerApp, DefaultContext} from "gearworks";
 import {IProps as ErrorPageProps} from "./views/errors/error";
 import {DefaultTTL, CacheName, registerCaches} from "./modules/cache";
 
+// Prepare SSL certificates, using localhost.daplie.com or let's encrypt depending on the environment
+
+let httpsOptions;
+
+if (config.isLive)
+{
+    const lex = require("letsencrypt-express").testing().create({
+        configDir: require("os").homedir() + "/letsencrypt/etc",
+        approveRegistration: (hostname, approve) =>
+        {
+            if (hostname === config.Domain)
+            {          
+                approve(null, {
+                    domains: [hostname],
+                    email: "YOUR_EMAIL@DOMAIN.com",
+                    agreeTos: true,
+                })
+            }
+        }
+    })
+    httpsOptions = lex.httpsOptions;
+}
+else
+{
+    httpsOptions = require("localhost.daplie.com-certificates");
+}
+
+const https = require("spdy").createServer(httpsOptions).listen(443);
+
 //Prepare Hapi server
 const server: Server = new Hapi.Server() as Server;
 const serverConfig: Hapi.IServerConnectionOptions = {
-    port: 8080,
+    listener: https,
+    autoListen: false,
+    tls: true,
     host: "0.0.0.0",
     router: {
         isCaseSensitive: false,
@@ -67,7 +98,7 @@ async function startServer()
         // Ensure config prop isn't optional
         if (config.OptionalProps.indexOf(prop) === -1 && typeof config[prop] === "undefined")
         {
-            //throw new Error(`Configuration property ${prop} cannot be null or empty. Check modules/config.ts to find the correct environment variable key for ${prop}.`);
+            throw new Error(`Configuration property ${prop} cannot be null or empty. Check modules/config.ts to find the correct environment variable key for ${prop}.`);
         }
     })
     
