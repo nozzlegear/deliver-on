@@ -101,8 +101,6 @@ async function startServer()
     server.ext("onPreResponse", (request, reply) =>
     {
         const resp = request.response;
-
-        console.log("Request received");
         
         if (resp.header)
         {
