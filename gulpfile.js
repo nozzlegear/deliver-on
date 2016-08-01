@@ -13,7 +13,6 @@ const minify          = require("gulp-clean-css");
 const webpackConfig   = require("./webpack.config");
 const autoprefix      = require("gulp-autoprefixer");
 const server          = require("gulp-develop-server");
-const gearworksConfig = require("envfile").parseFileSync("./gearworks.private.env");
 
 const sassFiles = ["css/**/*.scss"];
 const sassTask = (gulpSrc) => {
@@ -42,6 +41,7 @@ gulp.task("default", ["sass"]);
 
 gulp.task("watch", ["default"], (cb) =>
 {
+    const gearworksConfig = require("envfile").parseFileSync("./gearworks.private.env");
     const port = gearworksConfig["gearworks-port"] || 3000;
     const subdomain = gearworksConfig["gearworks-ngrokSubdomain"];
     const compiler = webpack(webpackConfig);
