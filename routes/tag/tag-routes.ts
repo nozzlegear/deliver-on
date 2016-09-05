@@ -69,7 +69,7 @@ export async function getTag(server: Server, request: Request, reply: IReply)
     }
 
     // Client script should always be loaded from NPM CDN.
-    const scriptUrl = `https://npmcdn.com/deliver-on-client`;
+    const scriptUrl = `https://unpkg.com/deliver-on-client`;
     const js = `(function () { var config = ${JSON.stringify(config)}; var script = document.createElement("script");script.src = "${scriptUrl}";script.type = "text/javascript";script.onload = function () {new DeliverOn(config);}; document.body.appendChild(script); } ())`;
 
     return reply(js).type("text/javascript");
